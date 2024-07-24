@@ -1,4 +1,5 @@
 import React from "react";
+import Trash from "../icons/Trash";
 
 export const NoteCard = ({ note }) => {
   const body = JSON.parse(note.body);
@@ -9,7 +10,9 @@ export const NoteCard = ({ note }) => {
       <div
         className="card-header"
         style={{ backgroundColor: colors.colorHeader }}
-      ></div>
+      >
+        <Trash />
+      </div>
 
       <div className="card-body">
         <textarea
