@@ -1,10 +1,24 @@
-import React from "react";
+import { useRef, React, useEffect } from "react";
 import Trash from "../icons/Trash";
 
 export const NoteCard = ({ note }) => {
   const body = JSON.parse(note.body);
   const position = JSON.parse(note.position);
   const colors = JSON.parse(note.colors);
+
+  const textAreaRef = useRef(null);
+
+  useEffect(() => {
+    autoGrow(textAreaRef);
+  }, []);
+
+  const autoGrow = (textarea) => {
+    const { current } = textAreaRef;
+
+    current.style.height = "auto";
+    current.style.height = current.scrollHeight + "px";
+  };
+
   return (
     <div
       className="card"
@@ -23,8 +37,10 @@ export const NoteCard = ({ note }) => {
 
       <div className="card-body">
         <textarea
+          ref={textAreaRef}
           style={{ color: colors.colorText }}
           defaultValue={body}
+          onInput={() => autoGrow(textAreaRef)}
         ></textarea>
       </div>
 
