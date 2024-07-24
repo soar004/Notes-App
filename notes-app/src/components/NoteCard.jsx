@@ -1,6 +1,6 @@
 import { useRef, React, useEffect, useState } from "react";
 import Trash from "../icons/Trash";
-import { setNewOffset } from "../utils/utils";
+import { setNewOffset, autoGrow, setZIndex } from "../utils/utils";
 
 export const NoteCard = ({ note }) => {
   const body = JSON.parse(note.body);
@@ -17,12 +17,6 @@ export const NoteCard = ({ note }) => {
     autoGrow(textAreaRef);
   }, []);
 
-  const autoGrow = (textarea) => {
-    const { current } = textAreaRef;
-
-    current.style.height = "auto";
-    current.style.height = current.scrollHeight + "px";
-  };
   const mouseUp = (e) => {
     document.removeEventListener("mousemove", mouseMove);
     document.removeEventListener("mouseup", mouseUp);
@@ -33,6 +27,8 @@ export const NoteCard = ({ note }) => {
 
     document.addEventListener("mousemove", mouseMove);
     document.addEventListener("mouseup", mouseUp);
+
+    setZIndex(cardRef.current);
   };
 
   const mouseMove = (e) => {
@@ -73,6 +69,7 @@ export const NoteCard = ({ note }) => {
           style={{ color: colors.colorText }}
           defaultValue={body}
           onInput={() => autoGrow(textAreaRef)}
+          onFocus={() => setZIndex(cardRef.current)}
         ></textarea>
       </div>
 
