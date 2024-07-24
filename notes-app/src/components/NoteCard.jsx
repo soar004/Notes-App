@@ -22,10 +22,16 @@ export const NoteCard = ({ note }) => {
     current.style.height = "auto";
     current.style.height = current.scrollHeight + "px";
   };
+  const mouseUp = (e) => {
+    document.removeEventListener("mousemove", mouseMove);
+    document.removeEventListener("mouseup", mouseUp);
+  };
 
   const mouseDown = (e) => {
     mouseStartPos = { x: e.clientX, y: e.clientY };
+
     document.addEventListener("mousemove", mouseMove);
+    document.addEventListener("mouseup", mouseUp);
   };
 
   const mouseMove = (e) => {
@@ -34,7 +40,6 @@ export const NoteCard = ({ note }) => {
       y: mouseStartPos.y - e.clientY,
     };
 
-    console.log(mouseMoveDir);
     mouseStartPos.x = e.clientX;
     mouseStartPos.y = e.clientY;
 
