@@ -30,6 +30,7 @@ body {
   width: 400px;
   border-radius: 5px;
   cursor: pointer;
+  position: absolute;
   box-shadow:
     0 1px 1px hsl(0deg 0% 0% / 0.075),
     0 2px 2px hsl(0deg 0% 0% / 0.075),
