@@ -1,4 +1,5 @@
 import React from "react";
+import AddButton from "./AddButton.jsx";
 import colors from "../assets/colors.json";
 import Color from "./Color.jsx";
 
