@@ -1,7 +1,7 @@
 import React from "react";
 import AddButton from "./AddButton";
 import colors from "../assets/colors.json";
-import Color from "./Color";
+import Color from "./Color.jsx";
 
 const Controls = () => {
   return (

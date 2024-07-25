@@ -1,14 +1,13 @@
-import { createContext } from "react";
-import { useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import Spinner from "../icons/Spinner";
 import { db } from "../appwrite/databases";
 
 export const NoteContext = createContext();
 
 const NotesProvider = ({ children }) => {
-  const [selectedNote, setSelectedNote] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState();
+  const [notes, setNotes] = useState([]);
+  const [selectedNote, setSelectedNote] = useState(null);
 
   useEffect(() => {
     init();
@@ -41,4 +40,5 @@ const NotesProvider = ({ children }) => {
     </NoteContext.Provider>
   );
 };
+
 export default NotesProvider;

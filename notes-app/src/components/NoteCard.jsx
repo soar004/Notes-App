@@ -1,31 +1,27 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import DeleteButton from "./DeleteButton";
 import { db } from "../appwrite/databases";
 import Spinner from "../icons/Spinner";
 import { setNewOffset, autoGrow, setZIndex, bodyParser } from "../utils/utils";
+import { NoteContext } from "../context/NoteContext";
 
 export const NoteCard = ({ note }) => {
-  let mouseStartPos = useRef({ x: 0, y: 0 });
+  const mouseStartPos = useRef({ x: 0, y: 0 });
   const cardRef = useRef(null);
+  const textAreaRef = useRef(null);
 
-  const [setSelectedNote] = useState(null);
+  const { setSelectedNote } = useContext(NoteContext);
 
   const [saving, setSaving] = useState(false);
   const keyUpTimer = useRef(null);
 
   const [position, setPosition] = useState(JSON.parse(note.position));
-
   const body = bodyParser(note.body);
-
   const colors = bodyParser(note.colors, {
     colorBody: "#fff",
     colorHeader: "#000",
     colorText: "#000",
   });
-
-  const [currentPosition, setCurrentPosition] = useState(position);
-
-  const textAreaRef = useRef(null);
 
   useEffect(() => {
     autoGrow(textAreaRef);
@@ -34,10 +30,10 @@ export const NoteCard = ({ note }) => {
 
   const mouseDown = (e) => {
     if (e.target.className === "card-header") {
-      mouseStartPos.x = e.clientX;
-      mouseStartPos.y = e.clientY;
+      mouseStartPos.current = { x: e.clientX, y: e.clientY };
 
       setZIndex(cardRef.current);
+      setSelectedNote(note);
       document.addEventListener("mousemove", mouseMove);
       document.addEventListener("mouseup", mouseUp);
     }
@@ -45,15 +41,15 @@ export const NoteCard = ({ note }) => {
 
   const mouseMove = (e) => {
     const mouseMoveDir = {
-      x: mouseStartPos.x - e.clientX,
-      y: mouseStartPos.y - e.clientY,
+      x: mouseStartPos.current.x - e.clientX,
+      y: mouseStartPos.current.y - e.clientY,
     };
 
-    mouseStartPos.x = e.clientX;
-    mouseStartPos.y = e.clientY;
+    mouseStartPos.current = { x: e.clientX, y: e.clientY };
 
     const newPosition = setNewOffset(cardRef.current, mouseMoveDir);
     setPosition(newPosition);
+    console.log("New Position:", newPosition); // Debug log
   };
 
   const mouseUp = async () => {
@@ -61,6 +57,7 @@ export const NoteCard = ({ note }) => {
     document.removeEventListener("mouseup", mouseUp);
 
     const newPosition = setNewOffset(cardRef.current);
+    console.log("Final Position:", newPosition); // Debug log
     saveData("position", newPosition);
   };
 
@@ -85,18 +82,23 @@ export const NoteCard = ({ note }) => {
     }, 2000);
   };
 
+  useEffect(() => {
+    cardRef.current.style.left = `${position.x}px`;
+    cardRef.current.style.top = `${position.y}px`;
+  }, [position]);
+
   return (
     <div
       ref={cardRef}
       className="card"
       style={{
         backgroundColor: colors.colorBody,
-        left: `${currentPosition.x}px`,
-        top: `${currentPosition.y}px`,
+        left: `${position.x}px`,
+        top: `${position.y}px`,
       }}
+      onMouseDown={mouseDown}
     >
       <div
-        onMouseDown={mouseDown}
         className="card-header"
         style={{ backgroundColor: colors.colorHeader }}
       >
@@ -116,7 +118,10 @@ export const NoteCard = ({ note }) => {
           style={{ color: colors.colorText }}
           defaultValue={body}
           onInput={() => textAreaRef.current && autoGrow(textAreaRef)}
-          onFocus={() => setZIndex(cardRef.current)}
+          onFocus={() => {
+            setZIndex(cardRef.current);
+            setSelectedNote(note);
+          }}
         ></textarea>
       </div>
     </div>
