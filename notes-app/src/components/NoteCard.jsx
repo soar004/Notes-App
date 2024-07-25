@@ -4,9 +4,13 @@ import { db } from "../appwrite/databases";
 import Spinner from "../icons/Spinner";
 import { setNewOffset, autoGrow, setZIndex, bodyParser } from "../utils/utils";
 
-export const NoteCard = ({ note, setNotes }) => {
-  const [saving, setSaving] = useState(false);
+export const NoteCard = ({ note }) => {
+  let mouseStartPos = useRef({ x: 0, y: 0 });
+  const cardRef = useRef(null);
 
+  const [setSelectedNote] = useState(null);
+
+  const [saving, setSaving] = useState(false);
   const keyUpTimer = useRef(null);
 
   const [position, setPosition] = useState(JSON.parse(note.position));
@@ -18,28 +22,20 @@ export const NoteCard = ({ note, setNotes }) => {
   });
 
   const [currentPosition, setCurrentPosition] = useState(position);
-  const cardRef = useRef(null);
-  const [selectedNote, setSelectedNote] = useState(null);
 
   const textAreaRef = useRef(null);
-  let mouseStartPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (textAreaRef.current) {
-      autoGrow(textAreaRef);
-    }
-    if (cardRef.current) {
-      setZIndex(cardRef.current);
-    }
+    autoGrow(textAreaRef);
+    setZIndex(cardRef.current);
   }, []);
 
   const mouseDown = (e) => {
     if (e.target.className === "card-header") {
-      setZIndex(cardRef.current);
-
       mouseStartPos.x = e.clientX;
       mouseStartPos.y = e.clientY;
 
+      setZIndex(cardRef.current);
       document.addEventListener("mousemove", mouseMove);
       document.addEventListener("mouseup", mouseUp);
     }
@@ -102,7 +98,7 @@ export const NoteCard = ({ note, setNotes }) => {
         className="card-header"
         style={{ backgroundColor: colors.colorHeader }}
       >
-        <DeleteButton setNotes={setNotes} noteId={note.$id} />
+        <DeleteButton noteId={note.$id} />
         {saving && (
           <div className="card-saving">
             <Spinner color={colors.colorText} />
