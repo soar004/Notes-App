@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
-import Trash from "../icons/Trash";
+import DeleteButton from "./DeleteButton";
 import { db } from "../appwrite/databases";
 import Spinner from "../icons/Spinner";
 import { setNewOffset, autoGrow, setZIndex, bodyParser } from "../utils/utils";
 
-export const NoteCard = ({ note }) => {
+export const NoteCard = ({ note, setNotes }) => {
   const [saving, setSaving] = useState(false);
 
   const keyUpTimer = useRef(null);
@@ -34,14 +34,15 @@ export const NoteCard = ({ note }) => {
   }, []);
 
   const mouseDown = (e) => {
-    mouseStartPos.current = { x: e.clientX, y: e.clientY };
+    if (e.target.className === "card-header") {
+      setZIndex(cardRef.current);
 
-    document.addEventListener("mousemove", mouseMove);
-    document.addEventListener("mouseup", mouseUp);
+      mouseStartPos.x = e.clientX;
+      mouseStartPos.y = e.clientY;
 
-    setZIndex(cardRef.current);
-
-    setSelectedNote(note);
+      document.addEventListener("mousemove", mouseMove);
+      document.addEventListener("mouseup", mouseUp);
+    }
   };
 
   const mouseMove = (e) => {
@@ -101,7 +102,7 @@ export const NoteCard = ({ note }) => {
         className="card-header"
         style={{ backgroundColor: colors.colorHeader }}
       >
-        <Trash />
+        <DeleteButton setNotes={setNotes} noteId={note.$id} />
         {saving && (
           <div className="card-saving">
             <Spinner color={colors.colorText} />

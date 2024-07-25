@@ -28,10 +28,10 @@ const NotesPage = () => {
     <div className="notes-container">
       {notes.length > 0 ? (
         notes.map((note) => (
-          <NoteCard key={note.$id} note={note} /> // Render each note using NoteCard component
+          <NoteCard key={note.$id} note={note} setNotes={setNotes} /> //
         ))
       ) : (
-        <p>No notes available.</p> // Display a message if no notes are found
+        <p>No notes available.</p>
       )}
     </div>
   );
