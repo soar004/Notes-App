@@ -1,46 +1,42 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Trash from "../icons/Trash";
 import { db } from "../appwrite/databases";
-import { setNewOffset, autoGrow, setZIndex, bodyParser } from "../utils/utils";
+import Spinner from "../icons/Spinner";
+import DeleteButton from "../components/DeleteButton";
+import { useContext } from "react";
+import { NotesContext } from "../context/NotesContext";
 
-export const NoteCard = ({ note }) => {
+const NoteCard = ({ note }) => {
+  let mouseStartPos = { x: 0, y: 0 };
+  const cardRef = useRef(null);
+
+  const { setSelectedNote } = useContext(NotesContext);
+
   const [saving, setSaving] = useState(false);
-
   const keyUpTimer = useRef(null);
 
   const [position, setPosition] = useState(JSON.parse(note.position));
+  const colors = JSON.parse(note.colors);
   const body = bodyParser(note.body);
-  const colors = bodyParser(note.colors, {
-    colorBody: "#fff",
-    colorHeader: "#000",
-    colorText: "#000",
-  });
-
-  const [currentPosition, setCurrentPosition] = useState(position);
-  const cardRef = useRef(null);
-  const [selectedNote, setSelectedNote] = useState(null);
 
   const textAreaRef = useRef(null);
-  let mouseStartPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (textAreaRef.current) {
-      autoGrow(textAreaRef);
-    }
-    if (cardRef.current) {
-      setZIndex(cardRef.current);
-    }
+    autoGrow(textAreaRef);
+    setZIndex(cardRef.current);
   }, []);
 
   const mouseDown = (e) => {
-    mouseStartPos.current = { x: e.clientX, y: e.clientY };
+    if (e.target.className === "card-header") {
+      mouseStartPos.x = e.clientX;
+      mouseStartPos.y = e.clientY;
 
-    document.addEventListener("mousemove", mouseMove);
-    document.addEventListener("mouseup", mouseUp);
+      setZIndex(cardRef.current);
 
-    setZIndex(cardRef.current);
-
-    setSelectedNote(note);
+      document.addEventListener("mousemove", mouseMove);
+      document.addEventListener("mouseup", mouseUp);
+      setSelectedNote(note);
+    }
   };
 
   const mouseMove = (e) => {
@@ -66,6 +62,7 @@ export const NoteCard = ({ note }) => {
 
   const saveData = async (key, value) => {
     const payload = { [key]: JSON.stringify(value) };
+    console.log("Save data called:", payload);
     try {
       await db.notes.update(note.$id, payload);
     } catch (error) {
@@ -74,13 +71,14 @@ export const NoteCard = ({ note }) => {
     setSaving(false);
   };
 
-  const handleKeyUp = () => {
+  const handleKeyUp = async () => {
     setSaving(true);
     if (keyUpTimer.current) {
       clearTimeout(keyUpTimer.current);
     }
 
     keyUpTimer.current = setTimeout(() => {
+      console.log("Timer started");
       saveData("body", textAreaRef.current.value);
     }, 2000);
   };
@@ -90,33 +88,40 @@ export const NoteCard = ({ note }) => {
       ref={cardRef}
       className="card"
       style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
         backgroundColor: colors.colorBody,
-        left: `${currentPosition.x}px`,
-        top: `${currentPosition.y}px`,
       }}
     >
       <div
         onMouseDown={mouseDown}
         className="card-header"
-        style={{ backgroundColor: colors.colorHeader }}
+        style={{
+          backgroundColor: colors.colorHeader,
+        }}
       >
-        <Trash />
+        <DeleteButton noteId={note.$id} />
+
         {saving && (
           <div className="card-saving">
+            <Spinner color={colors.colorText} />
             <span style={{ color: colors.colorText }}>Saving...</span>
           </div>
         )}
-        ;
       </div>
-
       <div className="card-body">
         <textarea
           onKeyUp={handleKeyUp}
+          onFocus={() => {
+            setZIndex(cardRef.current);
+            setSelectedNote(note);
+          }}
+          onInput={() => {
+            autoGrow(textAreaRef);
+          }}
           ref={textAreaRef}
           style={{ color: colors.colorText }}
           defaultValue={body}
-          onInput={() => textAreaRef.current && autoGrow(textAreaRef)}
-          onFocus={() => setZIndex(cardRef.current)}
         ></textarea>
       </div>
     </div>

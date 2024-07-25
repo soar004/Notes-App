@@ -51,10 +51,11 @@ export const setZIndex = (selectedCard) => {
   }
 };
 
-export const bodyParser = (value) => {
+export function bodyParser(value) {
   try {
+    JSON.parse(value);
     return JSON.parse(value);
   } catch (error) {
     return value;
   }
-};
+}
