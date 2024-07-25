@@ -49,7 +49,6 @@ export const NoteCard = ({ note }) => {
 
     const newPosition = setNewOffset(cardRef.current, mouseMoveDir);
     setPosition(newPosition);
-    console.log("New Position:", newPosition); // Debug log
   };
 
   const mouseUp = async () => {
@@ -57,7 +56,6 @@ export const NoteCard = ({ note }) => {
     document.removeEventListener("mouseup", mouseUp);
 
     const newPosition = setNewOffset(cardRef.current);
-    console.log("Final Position:", newPosition); // Debug log
     saveData("position", newPosition);
   };
 
