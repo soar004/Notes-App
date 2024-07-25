@@ -1,29 +1,49 @@
-import { useRef, React, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Trash from "../icons/Trash";
 import { setNewOffset, autoGrow, setZIndex } from "../utils/utils";
 
 export const NoteCard = ({ note }) => {
-  const body = JSON.parse(note.body);
-  const [position, setPosition] = useState(JSON.parse(note.position));
-  const colors = JSON.parse(note.colors);
+  let body, position, colors;
 
-  let mouseStartPos = { x: 0, y: 0 };
+  try {
+    body = JSON.parse(note.body);
+  } catch (error) {
+    console.error("Failed to parse note body:", note.body);
+    body = ""; // Fallback to an empty string or handle it as needed
+  }
 
+  try {
+    position = JSON.parse(note.position);
+  } catch (error) {
+    console.error("Failed to parse note position:", note.position);
+    position = { x: 0, y: 0 }; // Fallback to a default position
+  }
+
+  try {
+    colors = JSON.parse(note.colors);
+  } catch (error) {
+    console.error("Failed to parse note colors:", note.colors);
+    colors = { colorBody: "#fff", colorHeader: "#000", colorText: "#000" }; // Fallback to default colors
+  }
+
+  const [currentPosition, setCurrentPosition] = useState(position);
   const cardRef = useRef(null);
-
   const textAreaRef = useRef(null);
+  const mouseStartPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    autoGrow(textAreaRef);
-  }, []);
+    if (textAreaRef.current) {
+      autoGrow(textAreaRef);
+    }
+  }, [body]);
 
-  const mouseUp = (e) => {
+  const mouseUp = () => {
     document.removeEventListener("mousemove", mouseMove);
     document.removeEventListener("mouseup", mouseUp);
   };
 
   const mouseDown = (e) => {
-    mouseStartPos = { x: e.clientX, y: e.clientY };
+    mouseStartPos.current = { x: e.clientX, y: e.clientY };
 
     document.addEventListener("mousemove", mouseMove);
     document.addEventListener("mouseup", mouseUp);
@@ -33,16 +53,14 @@ export const NoteCard = ({ note }) => {
 
   const mouseMove = (e) => {
     const mouseMoveDir = {
-      x: mouseStartPos.x - e.clientX,
-      y: mouseStartPos.y - e.clientY,
+      x: mouseStartPos.current.x - e.clientX,
+      y: mouseStartPos.current.y - e.clientY,
     };
 
-    mouseStartPos.x = e.clientX;
-    mouseStartPos.y = e.clientY;
+    mouseStartPos.current = { x: e.clientX, y: e.clientY };
 
     const newPosition = setNewOffset(cardRef.current, mouseMoveDir);
-
-    setPosition(newPosition);
+    setCurrentPosition(newPosition);
   };
 
   return (
@@ -51,8 +69,8 @@ export const NoteCard = ({ note }) => {
       className="card"
       style={{
         backgroundColor: colors.colorBody,
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+        left: `${currentPosition.x}px`,
+        top: `${currentPosition.y}px`,
       }}
     >
       <div
@@ -68,12 +86,10 @@ export const NoteCard = ({ note }) => {
           ref={textAreaRef}
           style={{ color: colors.colorText }}
           defaultValue={body}
-          onInput={() => autoGrow(textAreaRef)}
+          onInput={() => textAreaRef.current && autoGrow(textAreaRef)}
           onFocus={() => setZIndex(cardRef.current)}
         ></textarea>
       </div>
-
-      {body}
     </div>
   );
 };

@@ -4,9 +4,9 @@ import { NoteCard } from "../components/NoteCard";
 
 const NotesPage = () => {
   return (
-    <div>
-      {notes.map((note) => (
-        <NoteCard key={note.$id} note={note} />
+    <div className="notes-container">
+      {notes.map(({ $id, ...noteProps }) => (
+        <NoteCard key={$id} note={noteProps} />
       ))}
     </div>
   );
