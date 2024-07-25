@@ -10,7 +10,7 @@ collections.forEach((collection) => {
         collection.dbId,
         collection.id,
         id,
-        payload
+        payload,
       );
     },
     update: async (id, payload) => {
@@ -18,7 +18,7 @@ collections.forEach((collection) => {
         collection.dbId,
         collection.id,
         id,
-        payload
+        payload,
       );
     },
     delete: async (id) => {
@@ -31,7 +31,7 @@ collections.forEach((collection) => {
       return await databases.listDocuments(
         collection.dbId,
         collection.id,
-        queries
+        queries,
       );
     },
   };

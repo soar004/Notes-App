@@ -9,7 +9,7 @@ const Color = ({ color }) => {
   const changeColor = () => {
     try {
       const currentNoteIndex = notes.findIndex(
-        (note) => note.$id === selectedNote.$id
+        (note) => note.$id === selectedNote.$id,
       );
 
       const updatedNote = {
