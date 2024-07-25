@@ -27,7 +27,9 @@ export const autoGrow = (textAreaRef) => {
   if (current) {
     current.style.height = "auto";
     current.style.height = `${current.scrollHeight}px`;
-    current.parentNode.style.height = `${current.scrollHeight}px`;
+    if (current.parentNode) {
+      current.parentNode.style.height = `${current.scrollHeight}px`;
+    }
   }
 };
 
@@ -43,8 +45,16 @@ export const setZIndex = (selectedCard) => {
 
     Array.from(document.getElementsByClassName("card")).forEach((card) => {
       if (card !== selectedCard) {
-        card.style.zIndex = selectedCard.style.zIndex - 1;
+        card.style.zIndex = parseInt(selectedCard.style.zIndex, 10) - 1;
       }
     });
+  }
+};
+
+export const bodyParser = (value) => {
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    return value;
   }
 };

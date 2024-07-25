@@ -1,16 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import Trash from "../icons/Trash";
-import { setNewOffset, autoGrow, setZIndex } from "../utils/utils";
+import { setNewOffset, autoGrow, setZIndex, bodyParser } from "../utils/utils";
 
 export const NoteCard = ({ note }) => {
   let body, position, colors;
 
-  try {
-    body = JSON.parse(note.body);
-  } catch (error) {
-    console.error("Failed to parse note body:", note.body);
-    body = ""; // Fallback to an empty string or handle it as needed
-  }
+  body = bodyParser(note.body);
 
   try {
     position = JSON.parse(note.position);
