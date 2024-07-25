@@ -14,7 +14,9 @@ export const NoteCard = ({ note }) => {
   const keyUpTimer = useRef(null);
 
   const [position, setPosition] = useState(JSON.parse(note.position));
+
   const body = bodyParser(note.body);
+
   const colors = bodyParser(note.colors, {
     colorBody: "#fff",
     colorHeader: "#000",
