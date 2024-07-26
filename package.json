@@ -13,6 +13,7 @@
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^1.0.12",
     "appwrite": "^15.0.0",
     "node": "^20.16.0",
     "react": "^18.3.1",
