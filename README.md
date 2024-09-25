@@ -1,1 +1,3 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/918055eb-f08b-4746-8388-8a112286aada/deploy-status)](https://app.netlify.com/sites/soar004-notes-app/deploys)
+# Notes App
+
+This is a simple notes app that allows you to create, read, update, and delete notes. It's built using React. The app is hosted on Vercel and can be accessed [here](https://notes-ktvq96evm-soar004s-projects.vercel.app/).
